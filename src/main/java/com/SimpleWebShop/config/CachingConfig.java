@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CachingConfig {
 //Commit 1
+//Commit 2
+	
 	@Bean
 	public CacheManager cacheManager() throws ServletException {
 		System.out.println("ssss Cache is initialized!");
