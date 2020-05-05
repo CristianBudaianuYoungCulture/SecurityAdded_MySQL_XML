@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xmlns="http://www.springframework.org/schema/beans"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -10,6 +11,8 @@
 		http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context 
 		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/data/jpa 
+    	http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/tx 
 		http://www.springframework.org/schema/tx/spring-tx.xsd">
 
@@ -33,7 +36,7 @@
 		<property name="driverClassName"
 			value="com.mysql.jdbc.Driver" />
 		<property name="url"
-			value="jdbc:mysql://localhost:3306/web_customer_tracker?useSSL=false" />
+			value="jdbc:mysql://localhost:3306/web_customer_tracker?useSSL=true" />
 		<property name="username" value="cristianBudaianu" />
 		<property name="password" value="cristianBudaianu" />
 
@@ -43,18 +46,26 @@
 			value="30000" /> -->
 	</bean>
 
+	<!-- Create default configuration for Hibernate -->
+	<bean id="hibernateJpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+
+
 	<!-- Step 2: Setup Hibernate session factory -->
-	<bean id="hibernate4AnnotatedSessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter"
+			ref="hibernateJpaVendorAdapter" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="com.SimpleWebShop" />
+
 
 		<!-- <property name="configLocation"> <value>classpath:hibernate.cfg.xml</value> 
 			</property> -->
 		<!-- <property name="configurationClass"> <value>org.hibernate.cfg.AnnotationConfiguration</value> 
 			</property> -->
 
-		<property name="hibernateProperties">
+		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
 				<prop key="hibernate.current_session_context_class">thread</prop>
@@ -64,15 +75,17 @@
 	</bean>
 
 	<!-- Step 3: Setup Hibernate transaction manager -->
-	<bean id="myTransactionManager"
-		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory"
-			ref="hibernate4AnnotatedSessionFactory" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory"/>
 	</bean>
 
 	<!-- Step 4: Enable configuration of transactional behavior based on annotations -->
 	<tx:annotation-driven
-		transaction-manager="myTransactionManager" />
+		transaction-manager="transactionManager" />
+
+	<jpa:repositories base-package="com.SimpleWebShop" />
+
 
 	<!-- <bean id="personDAO" class="com.journaldev.dao.PersonDAOImpl"> <property 
 		name="sessionFactory" ref="hibernate3AnnotatedSessionFactory" /> </bean> -->

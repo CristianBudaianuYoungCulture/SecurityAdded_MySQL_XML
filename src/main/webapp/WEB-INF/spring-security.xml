@@ -18,8 +18,10 @@
 	</authentication-manager>
 
 
-	<!-- <http auto-config="true" security="none"> </http> -->
-	<http auto-config="true">
+<!-- 	<http auto-config="true" security="none"> </http>
+	<http auto-config="true" security="none"> </http>
+ -->
+ 	<http auto-config="true">
 		<intercept-url pattern="/**"
 			access="hasRole('ROLE_USER')" />
 		<csrf disabled="true" />

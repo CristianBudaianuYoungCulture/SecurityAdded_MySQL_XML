@@ -20,6 +20,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.SimpleWebShop.integration.entities.CartEntity;
 import com.SimpleWebShop.integration.entities.Entity;
+import com.SimpleWebShop.integration.entities.Person;
+import com.SimpleWebShop.integration.repo.PersonRepository;
 import com.SimpleWebShop.integration.repo.ProductRepository;
 import com.SimpleWebShop.integration.repo.dao.CustomerDAO;
 import com.SimpleWebShop.integration.repo.entity.Customer;
@@ -32,6 +34,8 @@ public class HomeController {
 	private ProductRepository productRepositoryBean;
 	@Autowired
 	private CustomerDAO customerDAOImpl;
+	@Autowired
+	PersonRepository<Person> personRepository;
 
 	@RequestMapping(value = "/")
 	public ModelAndView index(HttpServletResponse response) throws IOException {
@@ -43,6 +47,7 @@ public class HomeController {
 			throws IOException, ServletException {
 		String item = request.getParameter("item");
 		List<Entity> items;
+		Iterable<Person> findAll = personRepository.findAll();
 
 		List<Customer> customers = customerDAOImpl.getCustomers();
 		if ("emptycart".equals(item)) {
