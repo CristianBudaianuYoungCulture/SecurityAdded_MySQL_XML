@@ -19,23 +19,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.SimpleWebShop.integration.entities.CartEntity;
-import com.SimpleWebShop.integration.entities.Entity;
+import com.SimpleWebShop.integration.entities.Customer;
 import com.SimpleWebShop.integration.entities.Person;
-import com.SimpleWebShop.integration.repo.PersonRepository;
-import com.SimpleWebShop.integration.repo.ProductRepository;
-import com.SimpleWebShop.integration.repo.dao.CustomerDAO;
-import com.SimpleWebShop.integration.repo.entity.Customer;
+import com.SimpleWebShop.integration.entities.ProductEntity;
+import com.SimpleWebShop.integration.repo.CartRepo;
+import com.SimpleWebShop.integration.repo.CustomerDAOSimpleJPA;
+import com.SimpleWebShop.integration.repo.ProductRepo;
 import com.SimpleWebShop.utility.WebShopUtilityClass;
 
 @Controller
 public class HomeController {
 
 	@Autowired
-	private ProductRepository productRepositoryBean;
+	private ProductRepo<Person> productRepository;
 	@Autowired
-	private CustomerDAO customerDAOImpl;
+	private CartRepo<CartEntity> cartRepository;
+
 	@Autowired
-	PersonRepository<Person> personRepository;
+	private CustomerDAOSimpleJPA customerDAOSimpleJPA;
 
 	@RequestMapping(value = "/")
 	public ModelAndView index(HttpServletResponse response) throws IOException {
@@ -46,17 +47,17 @@ public class HomeController {
 	public void listItems(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		String item = request.getParameter("item");
-		List<Entity> items;
-		Iterable<Person> findAll = personRepository.findAll();
+		List<ProductEntity> items = null;
 
-		List<Customer> customers = customerDAOImpl.getCustomers();
+		List<Customer> customers = customerDAOSimpleJPA.getCustomers();
 		if ("emptycart".equals(item)) {
-			productRepositoryBean.emptyCart();
+			cartRepository.deleteAllForUser();
 			items = new ArrayList<>();
 		} else if ("cart".equals(item)) {
-			items = productRepositoryBean.retriveCartProducts(item);
+			items = cartRepository.retriveAllForUser();
 		} else {
-			items = productRepositoryBean.retriveProducts(item);
+			System.out.println("button pressed");
+			items = productRepository.findByCategory(item);
 		}
 
 		request.setAttribute("products", items);
@@ -67,9 +68,9 @@ public class HomeController {
 	@RequestMapping(value = "/cart/item", method = { RequestMethod.POST })
 	@ResponseBody
 	public String addToCart(@RequestParam Map<String, Object> body) {
-		CartEntity cartEntity = new CartEntity();
-		WebShopUtilityClass.mapBodyToEntity(body, cartEntity);
-		productRepositoryBean.updateCartDataBase(cartEntity);
+		ProductEntity productEntity = new ProductEntity();
+		WebShopUtilityClass.mapBodyToEntity(body, productEntity);
+		cartRepository.addProductToCart(productEntity);
 		return "Added";
 	}
 

@@ -8,10 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "cart", schema = "web_customer_tracker")
-public class CartEntity {
+@Table(name = "product", schema = "web_customer_tracker")
+public class ProductEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	@Column(name = "product_name", length = 50, nullable = false)
 	private String name;
@@ -19,12 +19,6 @@ public class CartEntity {
 	private String price;
 	@Column(name = "category", length = 50, nullable = false)
 	private String category;
-	@Column(name = "user", length = 50, nullable = false)
-	private String user;
-
-	public String getName() {
-		return name;
-	}
 
 	public int getId() {
 		return id;
@@ -34,24 +28,16 @@ public class CartEntity {
 		this.id = id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
-		this.price = price;
+	public String getName() {
+		return name;
 	}
 
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getCategory() {
@@ -60,6 +46,10 @@ public class CartEntity {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
 	}
 
 }
